@@ -1,5 +1,6 @@
-import { Input, Product } from '@/types';
-import { revalidateTag } from 'next/cache';
+import { addProduct } from '@/actions/serverAction';
+import { Product } from '@/types';
+import Link from 'next/link';
 
 
 export default async function Home() {
@@ -11,24 +12,9 @@ export default async function Home() {
     }
   })
   const products:Product[] = await res.json();
-  const addProduct = async (e:FormData) => {
-    "use server";
-    const product = e.get('product')?.toString();
-    const price = e.get('price')?.toString();
-    if(!product || !price) return;
-    const inputModel: Input= {
-      product,
-      price,
-    }
-    const inputres = await fetch("https://64bc21c57b33a35a444711cc.mockapi.io/products", {
-      method: 'POST',
-      body: JSON.stringify(inputModel),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    revalidateTag("products");
-  } 
+
+  // POST Products
+   
 
     return (
     <main>
@@ -40,10 +26,10 @@ export default async function Home() {
       <div className="flex flex-wrap gap-3 mt-3">
       {
         products.map((product,i) => (
-          <div key={i} className='group border border-gray-300 px-3 ease-in-out duration-300 rounded-md shadow-md hover:scale-105 hover:cursor-pointer'>
+          <Link href={`/${product.id}`} key={i} className='group border border-gray-300 px-3 ease-in-out duration-300 rounded-md shadow-md hover:scale-105 hover:cursor-pointer'>
             <p className='text-center group-hover:font-semibold'>{product.product}</p>
             <p className='text-center group-hover:font-semibold'>$ {product.price}</p>
-          </div>
+          </Link>
         ))
       }
       </div>
